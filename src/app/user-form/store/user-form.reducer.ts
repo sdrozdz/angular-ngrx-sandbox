@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { UserFormActions } from './user-form.actions';
+import { ValidationErrors } from '@angular/forms';
 
 export const userFormFeatureKey = 'userForm';
 
@@ -7,13 +8,15 @@ export interface FormFieldState<T> {
   value: T;
   dirty: boolean;
   valid: boolean;
+  errors: ValidationErrors | null;
 }
 
 export function emptyControl<T>(defaultValue: T) {
   return {
     value: defaultValue,
     dirty: false,
-    valid: false
+    valid: false,
+    errors: null
   };
 }
 

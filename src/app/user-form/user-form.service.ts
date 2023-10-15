@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { FormFieldState, State, State as UserFormState } from './store/user-form.reducer';
-import { Subscription, debounce, debounceTime, distinctUntilChanged, filter, merge, tap } from 'rxjs';
+import { Observable, Subscription, debounce, debounceTime, distinctUntilChanged, filter, merge, tap } from 'rxjs';
 import { UserFormActions } from './store/user-form.actions';
 
 export interface UserFormFields {
@@ -33,30 +33,27 @@ export class UserFormService implements OnDestroy {
   }
 
   connect() {
-
-    const firstNameSync$ = this.fields.controls.firstName.valueChanges.pipe(
-      distinctUntilChanged(),
-      tap((value) => this.store.dispatch(UserFormActions.addControl({ control: 'firstName', controlState: this.getControlState(this.fields.controls.firstName) })))
-    );
-
-    const firstNameLoad$ = this.store.select((state) => state.userForm.form.firstName.value).pipe(
-      tap(console.log),
-      tap(value => this.fields.controls.firstName.setValue(value, { emitEvent: false, onlySelf: true }))
-    );
-
-
     this.sub = merge(
-      firstNameSync$,
-      firstNameLoad$
+      this.createSyncObservable('firstName', this.fields.controls.firstName),
+      this.createSyncObservable('lastName', this.fields.controls.lastName),
+      this.createSyncObservable('email', this.fields.controls.email),
+      this.createSyncObservable('age', this.fields.controls.age),
     ).subscribe();
+  }
 
+  private createSyncObservable<T>(controlName: keyof UserFormFields, control: FormControl<T>): Observable<any> {
+    return control.valueChanges.pipe(
+      distinctUntilChanged(),
+      tap((value) => this.store.dispatch(UserFormActions.addControl({ control: controlName, controlState: this.getControlState(control) })))
+    );
   }
 
   private getControlState<T>(control: FormControl<T>): FormFieldState<T> {
     return {
       value: control.value,
       valid: control.valid,
-      dirty: control.dirty
+      dirty: control.dirty,
+      errors: control.errors  
     };
   }
 }
