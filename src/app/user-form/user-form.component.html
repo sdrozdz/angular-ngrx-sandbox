@@ -1,0 +1,36 @@
+
+<form [formGroup]="userForm.fields">
+
+    <div>
+        <label>First name:</label>
+        <input [formControl]="userForm.fields.controls.firstName" />
+        <div class="error">{{ userForm.fields.controls.firstName.errors | json }}</div>
+    </div>
+
+    <div>
+        <label>Last name:</label>
+        <input [formControl]="userForm.fields.controls.lastName" />
+        <div class="error">{{ userForm.fields.controls.lastName.errors | json }}</div>
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input [formControl]="userForm.fields.controls.email" />
+        <div class="error">{{ userForm.fields.controls.email.errors | json }}</div>
+    </div>
+
+    <div>
+        <label>Age:</label>
+        <input type="number" [formControl]="userForm.fields.controls.age" />
+        <div class="error">{{ userForm.fields.controls.age.errors | json }}</div>
+    </div>
+
+
+
+    <p>
+        <button type="submit" (click)="handleSubmit()" [disabled]="userForm.fields.invalid">Submit</button>
+        <button (click)="handleReset()">Reset</button>
+        <button (click)="handleUppercaseFirstName()">Uppercase first name</button>
+    </p>
+
+</form>
